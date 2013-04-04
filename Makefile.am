@@ -4,7 +4,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -L/usr/local/lib
 ctrllibs = -lm -lach -lc -lhuboctrl -ldaemonizer -lrt -lhuboparams
 
 # List the binary files you want to generate:
-bin_PROGRAMS = ctrl-sample ctrl-arm-sample ctrl-trajectory-sample ctrl-request-ik
+bin_PROGRAMS = ctrl-sample ctrl-arm-sample ctrl-trajectory-sample ctrl-request-ik ctrl-manipulation-basic
 
 
 # For each one, list the .cpp sources:
@@ -23,4 +23,7 @@ ctrl_trajectory_sample_LDADD = $(ctrllibs)
 
 ctrl_request_ik_SOURCES = src/ctrl-request-ik.cpp
 ctrl_request_ik_LDADD = $(ctrllibs)
+
+ctrl_manipulation_basic_SOURCES = src/ctrl-manipulation-basic.cpp
+ctrl_manipulation_basic_LDADD = $(ctrllibs)
 
