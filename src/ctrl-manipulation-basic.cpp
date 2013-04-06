@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 /// Pre-calculated finger joint limits to avoid self-destructing collision!
 /*------------------------
 -0.398068
@@ -32,10 +31,10 @@ int main( int argc, char **argv ) {
 
   //int r = ach_open(&chan_hubo_ref, HUBO_CHAN_REF_NAME, NULL);
   //assert(ACH_OK == r);
-  
-  //struct hubo_ref H_ref;
+
+  //struct hubo_ref H_ref
   //memset(&H_ref, 0, sizeof(H_ref));
-  
+
   //size_t fs;
   ///r = ach_get(&chan_hubo_ref, &H_ref, sizeof(H_ref), &fs, NULL, ACH_O_COPY);
   //assert(ACH_OK == r);
@@ -48,7 +47,7 @@ int main( int argc, char **argv ) {
 
   double ptime, dt;
   int i;
-  double k = 4; 
+  double k = 3;
   Eigen::Isometry3d trans;
   trans(0,0) = 0.924661; trans(0,1) = -0.368975;  trans(0,2) = 0.0941248; trans(0,3) = 0.421227;
   trans(1,0) = 0.371466; trans(1,1) =  0.928395;  trans(1,2) = -0.0098302; trans(1,3) = -0.169458;
@@ -65,14 +64,14 @@ int main( int argc, char **argv ) {
   Eigen::VectorXd loc(3);
   bool grasping = false;
   
-  //open hand initially                                                                                                                             
+  //open hand initially
   openCloseHand(torques, dofs, hubo, OPEN_HAND);
   hubo.sendControls();
 
   while(!daemon_sig_quit){
-    hubo.update(); 
+    hubo.update();
     dt = hubo.getTime() - ptime;
-    
+
     hubo.getRightArmAngles(current);
     hubo.huboArmIK(armAngles, trans, current, RIGHT);
     
@@ -84,22 +83,22 @@ int main( int argc, char **argv ) {
       //check for dangerous limits
       getFingersEncValues(hubo, dofs, vals);
       //cout << vals.transpose() << endl;
-           
+
       // go to desired point
       hubo.setArmAngles(RIGHT, armAngles, true);
-      
+
       // compute grasp torques
       torques = proportionalGraspController(k, vals, desiredGrasp);
       cout << torques.transpose() << endl;
-      
+
       //cout << (desiredLoc - loc).norm() << endl;
       if((desiredLoc - loc).norm() <= 0.01 || grasping){
 	grasping = true;
 	openCloseHand(torques, dofs, hubo, CLOSE_HAND);
       }
-      
+
       //cout << torques.transpose() << endl;
-      hubo.sendControls();	
+      hubo.sendControls();
     }
   }
 }
